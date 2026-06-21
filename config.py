@@ -6,7 +6,7 @@ load_dotenv()
 class Config:
     API_ID = int(os.environ.get("API_ID", "29904834"))
     API_HASH = os.environ.get("API_HASH", "8b4fd9ef578af114502feeafa2d31938")
-    BOT_TOKEN = os.environ.get("BOT_TOKEN", "8714836567:AAEe4CTUt9Mb6hqkLq2FnIrxEQSv9t-0Jz4")
+    BOT_TOKEN = os.environ.get("BOT_TOKEN", "8714836567:AAHigOewrnnEzzDRw9Wzxogu2lCsNeHhkAs")
     BOT_USERNAME = os.environ.get("BOT_USERNAME", "YtLiveV2Bot")
     
     MONGO_DB_URI = os.environ.get("MONGO_DB_URI", "mongodb+srv://manogog673:manogog673@cluster0.ot1qt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
