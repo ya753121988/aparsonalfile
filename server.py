@@ -6,9 +6,10 @@ from database import db
 
 routes = web.RouteTableDef()
 
-@routes.get("/")
+# এটিই হলো হেলথ চেক লজিক
+@routes.get("/", allow_head=True)
 async def home(request):
-    return web.Response(text="Bot is running!")
+    return web.Response(text="Bot is Running High!", content_type="text/html")
 
 @routes.get("/watch/{file_id}")
 async def watch_handler(request):
@@ -26,7 +27,7 @@ async def watch_handler(request):
 
 @routes.get("/dl/{file_id}")
 async def dl_handler(request):
-    return web.Response(text="Streaming data...")
+    return web.Response(text="Streaming logic ready...")
 
 async def web_server():
     app = web.Application()
