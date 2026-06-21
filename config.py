@@ -14,7 +14,7 @@ class Config:
     
     LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1004498638459"))
     FILE_STORE_ID = int(os.environ.get("FILE_STORE_ID", "-1004498638459"))
-    FSUB_CHANNEL = int(os.environ.get("FSUB_CHANNEL", "-100"))
+    FSUB_CHANNEL = int(os.environ.get("FSUB_CHANNEL", "-1004498638459"))
     
     BOT_LOGO = os.environ.get("BOT_LOGO", "https://graph.org/file/your-logo.jpg")
     CH1 = os.environ.get("CH1", "https://t.me/channel1")
@@ -22,6 +22,6 @@ class Config:
     CH3 = os.environ.get("CH3", "https://t.me/channel3")
     CH4 = os.environ.get("CH4", "https://t.me/channel4")
     
-    URL = os.environ.get("URL", "https://aparsonalfile.onrender.com")
+    URL = os.environ.get("URL", "aparsonalfile.onrender.com")
     PORT = int(os.environ.get("PORT", "8080"))
     AUTO_DELETE_TIME = 600 # ১০ মিনিট
