@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Page</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" />
+    <style>
+        body { font-family: sans-serif; background: #0d1117; color: white; margin: 0; padding: 10px; }
+        .video-wrapper { position: relative; width: 100%; max-width: 800px; margin: auto; border-radius: 10px; overflow: hidden; }
+        .watermark { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #1fd1f9; padding: 5px 10px; border-radius: 5px; font-weight: bold; z-index: 10; pointer-events: none; border: 1px solid #1fd1f9; }
+        .details-card { max-width: 800px; margin: 20px auto; background: #161b22; padding: 20px; border-radius: 12px; border: 1px solid #30363d; }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn { padding: 12px; text-align: center; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; background: #21262d; border: 1px solid #30363d; }
+        .btn-blue { background: #0088cc; }
+        .btn-green { border-color: #238636; color: #2ea043; grid-column: span 2; }
+    </style>
+</head>
+<body>
+    <div class="video-wrapper">
+        <div class="watermark">{{ watermark }}</div>
+        <video id="player" playsinline controls>
+            <source src="{{ stream_url }}" type="video/mp4" />
+        </video>
+    </div>
+    <div class="details-card">
+        <h3>ℹ️ File Details</h3>
+        <p>File ID: <span style="color:#1fd1f9;">{{ file_id }}</span></p>
+        <div class="btn-grid">
+            <a href="intent:{{ stream_url }}#Intent;package=com.mxtech.videoplayer.ad;end" class="btn">MX Player</a>
+            <a href="vlc://{{ stream_url }}" class="btn">VLC Player</a>
+            <a href="https://t.me/share/url?url={{ stream_url }}" class="btn btn-green">Share with Friends</a>
+            <a href="{{ stream_url }}" class="btn">Download</a>
+            <a href="https://t.me/{{ bot_username }}?start=file_{{ file_id }}" class="btn btn-blue">Get on Telegram</a>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
+    <script>const player = new Plyr('#player');</script>
+</body>
+</html>
