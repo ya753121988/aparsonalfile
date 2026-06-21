@@ -1,0 +1,8 @@
+pyrogram
+tgcrypto
+motor
+aiohttp
+aiofiles
+jinja2
+aiohttp_jinja2
+python-dotenv
