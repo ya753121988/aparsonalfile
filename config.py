@@ -9,7 +9,7 @@ class Config:
     BOT_TOKEN = os.environ.get("BOT_TOKEN", "8714836567:AAHigOewrnnEzzDRw9Wzxogu2lCsNeHhkAs")
     BOT_USERNAME = os.environ.get("BOT_USERNAME", "YtLiveV2Bot")
     
-    MONGO_DB_URI = os.environ.get("MONGO_DB_URI", "mongodb+srv://manogog673:manogog673@cluster0.ot1qt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    MONGO_DB_URI = os.environ.get("MONGO_DB_URI", "mongodb+srv://hepemo5263:hepemo5263@cluster0.5vugv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
     ADMINS = [int(x) for x in os.environ.get("ADMINS", "7120801813").split()]
     
     LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1004498638459"))
