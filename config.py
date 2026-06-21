@@ -22,7 +22,6 @@ class Config:
     CH3 = os.environ.get("CH3", "https://t.me/channel3")
     CH4 = os.environ.get("CH4", "https://t.me/channel4")
     
-    # এখানে https:// যোগ করা হয়েছে, এটি ছাড়া রেন্ডারে কাজ করবে না
-    URL = os.environ.get("URL", "https://aparsonalfile.onrender.com") 
-    PORT = int(os.environ.get("PORT", "8080"))
-    AUTO_DELETE_TIME = 600 # ১০ মিনিট
+    URL = os.environ.get("URL", "https://aparsonalfile.onrender.com").rstrip('/')
+    PORT = int(os.environ.get("PORT", "10000"))
+    AUTO_DELETE_TIME = int(os.environ.get("AUTO_DELETE_TIME", "600"))
