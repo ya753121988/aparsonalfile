@@ -9,13 +9,21 @@ from database import db
 from server import web_server
 from aiohttp import web
 
-bot = Client("FileStreamBot", api_id=Config.API_ID, api_hash=Config.API_HASH, bot_token=Config.BOT_TOKEN)
+# বট ক্লায়েন্ট
+bot = Client(
+    "FileStreamBot", 
+    api_id=Config.API_ID, 
+    api_hash=Config.API_HASH, 
+    bot_token=Config.BOT_TOKEN
+)
 
+# অটো ডিলিট লজিক
 async def auto_delete(file_msg, info_msg):
     await asyncio.sleep(Config.AUTO_DELETE_TIME)
     try:
         await file_msg.delete()
         await info_msg.delete()
+        print("--- [INFO] ফাইল এবং নোটিশ অটো ডিলিট করা হয়েছে ---", flush=True)
     except: pass
 
 @bot.on_message(filters.command("start") & filters.private)
@@ -23,7 +31,7 @@ async def start_handler(client, message):
     user = message.from_user
     await db.add_user(user.id)
     
-    # Force Subscribe
+    # Force Subscribe (বটকে চ্যানেলে এডমিন থাকতে হবে)
     try:
         await client.get_chat_member(Config.FSUB_CHANNEL, user.id)
     except UserNotParticipant:
@@ -31,7 +39,8 @@ async def start_handler(client, message):
             "❌ **বট ব্যবহার করতে আমাদের চ্যানেলে জয়েন করুন!**",
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("📢 জয়েন চ্যানেল", url=Config.CH1)]])
         )
-    except Exception: pass
+    except Exception as e:
+        print(f"--- [ERROR] Force Sub Check Error: {e} ---", flush=True)
 
     # Deep link file request
     if len(message.command) > 1 and message.command[1].startswith("file_"):
@@ -41,7 +50,8 @@ async def start_handler(client, message):
             info = await f_msg.reply_text(f"⚠️ এই ফাইলটি {Config.AUTO_DELETE_TIME//60} মিনিট পর অটো ডিলিট হবে।")
             asyncio.create_task(auto_delete(f_msg, info))
             return
-        except:
+        except Exception as e:
+            print(f"--- [ERROR] File Copy Error: {e} ---", flush=True)
             return await message.reply_text("দুঃখিত, ফাইলটি পাওয়া যায়নি!")
 
     # Normal Start
@@ -73,7 +83,7 @@ async def broadcast_handler(client, message):
             await msg.copy(user["id"])
             sent += 1
             await asyncio.sleep(0.3)
-        except Exception: pass
+        except: pass
     await message.reply_text(f"✅ ব্রডকাস্ট শেষ! মোট পাঠানো হয়েছে: {sent}")
 
 @bot.on_message(filters.command("set_watermark") & filters.user(Config.ADMINS))
@@ -85,34 +95,50 @@ async def set_wm(client, message):
 
 @bot.on_message(filters.private & (filters.video | filters.document | filters.audio))
 async def media_handler(client, message):
-    stored = await message.forward(Config.FILE_STORE_ID)
-    s_link = f"{Config.URL}/watch/{stored.id}"
-    d_link = f"{Config.URL}/dl/{stored.id}"
-    
-    btn = InlineKeyboardMarkup([
-        [InlineKeyboardButton("• STREAM •", url=s_link), InlineKeyboardButton("• DOWNLOAD •", url=d_link)],
-        [InlineKeyboardButton("• GET FILE •", url=f"https://t.me/{Config.BOT_USERNAME}?start=file_{stored.id}")]
-    ])
-    await message.reply_text(f"✅ ফাইল লিংক তৈরি হয়েছে!\n\n🖥️ স্ট্রিম লিংক: {s_link}", reply_markup=btn)
+    try:
+        stored = await message.forward(Config.FILE_STORE_ID)
+        s_link = f"{Config.URL}/watch/{stored.id}"
+        d_link = f"{Config.URL}/dl/{stored.id}"
+        
+        btn = InlineKeyboardMarkup([
+            [InlineKeyboardButton("• STREAM •", url=s_link), InlineKeyboardButton("• DOWNLOAD •", url=d_link)],
+            [InlineKeyboardButton("• GET FILE •", url=f"https://t.me/{Config.BOT_USERNAME}?start=file_{stored.id}")]
+        ])
+        await message.reply_text(f"✅ ফাইল লিংক তৈরি হয়েছে!\n\n🖥️ স্ট্রিম লিংক: {s_link}", reply_markup=btn)
+    except Exception as e:
+        print(f"--- [ERROR] Media Forward Error: {e} ---", flush=True)
 
 async def start_bot():
-    print("--- বট স্টার্ট হচ্ছে... ---")
+    print("--- [STEP 1] বট স্টার্ট করার চেষ্টা করা হচ্ছে... ---", flush=True)
     try:
-        await bot.start()
+        # ১০ সেকেন্ডের মধ্যে মংগোডিবি/টেলিগ্রাম কানেক্ট না হলে এরর দিবে (টাইমআউট)
+        await asyncio.wait_for(bot.start(), timeout=20)
+        print("--- [STEP 2] বট সফলভাবে লগইন করেছে! ---", flush=True)
+    except asyncio.TimeoutError:
+        print("--- [FATAL] মংগোডিবি কানেকশন টাইমআউট! নেটওয়ার্ক এক্সেস চেক করুন (0.0.0.0/0) ---", flush=True)
+        return
     except FloodWait as e:
-        print(f"FLOOD WAIT: {e.value} seconds")
+        print(f"--- [FLOOD] টেলিগ্রাম আপনাকে {e.value} সেকেন্ডের জন্য ব্লক করেছে ---", flush=True)
         await asyncio.sleep(e.value)
         await bot.start()
+    except Exception as e:
+        print(f"--- [ERROR] বট চালু হতে সমস্যা: {e} ---", flush=True)
+        return
     
-    print("--- বট লাইভ! সার্ভার চালু হচ্ছে... ---")
+    print("--- [STEP 3] ওয়েব সার্ভার চালু হচ্ছে... ---", flush=True)
     app = await web_server(bot)
     runner = web.AppRunner(app)
     await runner.setup()
     
+    # রেন্ডারের পোর্ট অটোমেটিক ধরা (10000)
     port = int(os.environ.get("PORT", Config.PORT))
     await web.TCPSite(runner, "0.0.0.0", port).start()
-    print(f"--- সার্ভার চালু পোর্ট: {port} ---")
+    print(f"--- [STEP 4] সার্ভার লাইভ পোর্ট: {port} ---", flush=True)
+    
     await asyncio.Event().wait()
 
 if __name__ == "__main__":
-    asyncio.run(start_bot())
+    try:
+        asyncio.run(start_bot())
+    except KeyboardInterrupt:
+        pass
